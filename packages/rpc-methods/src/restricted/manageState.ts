@@ -4,7 +4,7 @@ import {
   RestrictedMethodOptions,
   ValidPermissionSpecification,
 } from '@metamask/controllers';
-import { isObject, isValidJson, Json, NonEmptyArray } from '@metamask/utils';
+import { Json, NonEmptyArray, validateJsonAndGetSize } from '@metamask/utils';
 import { ethErrors } from 'eth-rpc-errors';
 
 const methodName = 'snap_manageState';
@@ -87,6 +87,8 @@ export enum ManageStateOperation {
   updateState = 'update',
 }
 
+export const STORAGE_SIZE_LIMIT = 10000; // In bytes
+
 /**
  * Builds the method implementation for `snap_manageState`.
  *
@@ -123,17 +125,23 @@ function getManageStateImplementation({
         return await getSnapState(origin);
 
       case ManageStateOperation.updateState:
-        if (!isObject(newState)) {
+        // eslint-disable-next-line no-case-declarations
+        const [isValid, plainTextSizeInBytes] =
+          validateJsonAndGetSize(newState);
+
+        if (!isValid) {
           throw ethErrors.rpc.invalidParams({
-            message: `Invalid ${method} "updateState" parameter: The new state must be a plain object.`,
+            message: `Invalid ${method} "updateState" parameter: The new state must be a
+            plain object that is JSON serializable.`,
             data: {
               receivedNewState:
                 typeof newState === 'undefined' ? 'undefined' : newState,
             },
           });
-        } else if (!isValidJson(newState)) {
+        } else if (plainTextSizeInBytes > STORAGE_SIZE_LIMIT) {
           throw ethErrors.rpc.invalidParams({
-            message: `Invalid ${method} "updateState" parameter: The new state must be JSON serializable.`,
+            message: `Invalid ${method} "updateState" parameter: The new state must not
+            exceed ${STORAGE_SIZE_LIMIT} bytes in size.`,
             data: {
               receivedNewState:
                 typeof newState === 'undefined' ? 'undefined' : newState,
@@ -141,7 +149,7 @@ function getManageStateImplementation({
           });
         }
 
-        await updateSnapState(origin, newState);
+        await updateSnapState(origin, newState as Record<string, Json>);
         return null;
 
       default:

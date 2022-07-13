@@ -144,8 +144,7 @@ function getManageStateImplementation({
           validateJsonAndGetSize(newState);
         if (!isValid) {
           throw ethErrors.rpc.invalidParams({
-            message: `Invalid ${method} "updateState" parameter: The new state must be a
-            plain object that is JSON serializable.`,
+            message: `Invalid ${method} "updateState" parameter: The new state must be JSON serializable.`,
             data: {
               receivedNewState:
                 typeof newState === 'undefined' ? 'undefined' : newState,

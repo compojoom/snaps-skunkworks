@@ -4,7 +4,12 @@ import {
   RestrictedMethodOptions,
   ValidPermissionSpecification,
 } from '@metamask/controllers';
-import { Json, NonEmptyArray, validateJsonAndGetSize } from '@metamask/utils';
+import {
+  Json,
+  NonEmptyArray,
+  isObject,
+  validateJsonAndGetSize,
+} from '@metamask/utils';
 import { ethErrors } from 'eth-rpc-errors';
 
 const methodName = 'snap_manageState';
@@ -125,10 +130,18 @@ function getManageStateImplementation({
         return await getSnapState(origin);
 
       case ManageStateOperation.updateState:
+        if (!isObject(newState)) {
+          throw ethErrors.rpc.invalidParams({
+            message: `Invalid ${method} "updateState" parameter: The new state must be a plain object.`,
+            data: {
+              receivedNewState:
+                typeof newState === 'undefined' ? 'undefined' : newState,
+            },
+          });
+        }
         // eslint-disable-next-line no-case-declarations
         const [isValid, plainTextSizeInBytes] =
           validateJsonAndGetSize(newState);
-
         if (!isValid) {
           throw ethErrors.rpc.invalidParams({
             message: `Invalid ${method} "updateState" parameter: The new state must be a
@@ -149,7 +162,7 @@ function getManageStateImplementation({
           });
         }
 
-        await updateSnapState(origin, newState as Record<string, Json>);
+        await updateSnapState(origin, newState);
         return null;
 
       default:

@@ -4689,7 +4689,7 @@ __metadata:
     "@metamask/post-message-stream": ^6.0.0
     "@metamask/safe-event-emitter": ^2.0.0
     "@metamask/snap-types": ^0.17.0
-    "@metamask/snap-utils": ^0.16.0
+    "@metamask/snap-utils": ^0.17.0
     "@metamask/template-snap": ^0.7.0
     "@metamask/utils": ^2.0.0
     "@peculiar/webcrypto": ^1.3.3
@@ -4805,15 +4805,6 @@ __metadata:
     typescript: ^4.4.0
   languageName: unknown
   linkType: soft
-
-"@metamask/snap-utils@npm:^0.16.0":
-  version: 0.16.0
-  resolution: "@metamask/snap-utils@npm:0.16.0"
-  dependencies:
-    "@chainsafe/strip-comments": ^1.0.7
-  checksum: 907050df89bc48fc12b6b9687d729efa3cb87f48b33757533446aad4b5667506e98ba0bbe0eb42684f4b02df93a2c83904cd19c7831f2d877d088b447f37e1bb
-  languageName: node
-  linkType: hard
 
 "@metamask/snaps-browserify-plugin@^0.17.0, @metamask/snaps-browserify-plugin@workspace:packages/plugin-browserify":
   version: 0.0.0-use.local
